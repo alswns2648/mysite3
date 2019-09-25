@@ -7,15 +7,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.itcen.mysite.exception.UserDaoException;
 import kr.co.itcen.mysite.vo.UserVo;
 
 
 @Repository
 public class UserDao {
+	@Autowired
+	private DataSource dataSource;
 	
-	public Boolean insert(UserVo vo) {
+	public Boolean insert(UserVo vo) throws UserDaoException{
 		Boolean result = false;
 		
 		Connection connection = null;
@@ -25,7 +31,7 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			connection = getConnection();
+			connection = dataSource.getConnection();
 			
 			String sql = "insert into user values(null, ?, ?, ?, ?, now())";
 			pstmt = connection.prepareStatement(sql);
@@ -44,7 +50,8 @@ public class UserDao {
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//한 곳에 모으기 위한 예외 전환(외부로)
+			throw new UserDaoException(e.getMessage());
 		} finally {
 			try {
 				if(rs != null) {
@@ -81,7 +88,7 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			connection = getConnection();
+			connection = dataSource.getConnection();
 			
 			String sql = "select name, email, gender from user where no=?";
 			pstmt = connection.prepareStatement(sql);
@@ -131,7 +138,7 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			connection = getConnection();
+			connection = dataSource.getConnection();
 			
 			String sql = "select no, name from user where email = ? and password = ?";
 			pstmt = connection.prepareStatement(sql);
@@ -179,7 +186,7 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			connection = getConnection();
+			connection = dataSource.getConnection();
 			
 			String sql = "update user set name=?, password=?, gender=? where no=?";
 
@@ -224,20 +231,20 @@ public class UserDao {
 		return result;	
 	}
 	
-	private Connection getConnection() throws SQLException {
-		Connection connection = null;
-		
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-		
-			String url = "jdbc:mariadb://192.168.1.119:3306/webdb?characterEncoding=utf8";
-			connection = DriverManager.getConnection(url, "webdb", "webdb");
-		
-		} catch (ClassNotFoundException e) {
-			System.out.println("Fail to Loading Driver:" + e);
-		}
-		
-		return connection;
-	}
+//	private Connection getConnection() throws SQLException {
+//		Connection connection = null;
+//		
+//		try {
+//			Class.forName("org.mariadb.jdbc.Driver");
+//		
+//			String url = "jdbc:mariadb://192.168.1.119:3306/webdb?characterEncoding=utf8";
+//			connection = DriverManager.getConnection(url, "webdb", "webdb");
+//		
+//		} catch (ClassNotFoundException e) {
+//			System.out.println("Fail to Loading Driver:" + e);
+//		}
+//		
+//		return connection;
+//	}
 
 }
