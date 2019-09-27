@@ -9,7 +9,7 @@
 <body>
 	<h1>Ooops!!</h1>
 	<p>
-		500 : 회원가입 query 틀리신거 같은데요 ㅡㅡ
+		500 : query 틀리신거 같은데요 ㅡㅡ
 	</p>
 </body>
 </html>

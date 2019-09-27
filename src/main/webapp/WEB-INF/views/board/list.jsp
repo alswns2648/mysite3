@@ -2,8 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>\
-
+	pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <html>
@@ -33,26 +32,41 @@
 						<th>&nbsp;</th>
 					</tr>
 
-					<c:set var="count" value='${fn:length(board) }' />
-					<c:forEach items='${board }' var='vo' varStatus='status'>
+					<c:forEach items='${list }' var='vo' varStatus='status'>
 						<tr>
 							<td>${count - status.index }</td>
-							<td><img style='padding-left:${25*vo.depth }px'
-								src='${pageContext.servletContext.contextPath }/assets/images/reply.png' />
-								<a
-								href="${pageContext.servletContext.contextPath }/board?a=view&no=${vo.no }">
-									${vo.title } </a></td>
+							<td style='text-align:left; padding-left:${20*vo.depth}px;'>
+
+								<c:if test="${vo.depth>0 }">
+									<img
+										src='${pageContext.servletContext.contextPath }/assets/images/reply.png' />
+								</c:if> <c:choose>
+									<c:when test="${vo.status == true}">
+										<a
+											href=" ${pageContext.servletContext.contextPath }/board?a=status&page=${param.page }&no=${vo.no}&kwd=${param.kwd}">
+											${vo.title } </a>
+									</c:when>
+									<c:otherwise>
+									삭제된 게시물 입니다.	
+								</c:otherwise>
+								</c:choose>
+							</td>
 							<td>${vo.user_name }</td>
 							<td>${vo.hit }</td>
 							<td>${vo.reg_date }</td>
-								<td><a href="${pageContext.servletContext.contextPath }/board?a=delete&no=${vo.no }" class="del">삭제</a></td>
+							<td><c:if
+									test='${(not empty authUser) and authUser.no == vo.user_no and vo.status == true}'>
+									<a
+										href="${pageContext.servletContext.contextPath }/board?a=delete&no=${vo.no }"
+										class="del">삭제</a>
+								</c:if></td>
 						</tr>
 					</c:forEach>
 				</table>
 				<c:if test="${!empty authUser }">
 					<div class="bottom">
 						<a
-							href="${pageContext.servletContext.contextPath }/board?a=writeform"
+							href="${pageContext.servletContext.contextPath }/board?a=writeform&kwd=${param.kwd}"
 							id="new-book">글쓰기</a>
 					</div>
 				</c:if>
